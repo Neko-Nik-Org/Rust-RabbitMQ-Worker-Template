@@ -19,4 +19,8 @@ services:
       - RABBITMQ_QUEUE_NAME=nekonik_queue
       - RABBITMQ_QUEUE_DURABLE=true
 
+      # Prefetch Count (Only for QoS - Batch Processing)
+      - RABBITMQ_PREFETCH_COUNT=10
+      - RABBITMQ_PREFETCH_WINDOW_ms=200
+
     restart: always

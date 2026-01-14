@@ -13,8 +13,6 @@ pub struct RabbitMQConfig {
     consumer_tag: String,
     queue_name: String,
     is_queue_durable: bool,
-    pub prefetch_count: usize,
-    pub prefetch_window: u64,
 }
 
 
@@ -88,14 +86,6 @@ impl RabbitMQConfig {
             .unwrap_or_else(|_| "false".to_string())
             .parse()
             .expect("RABBITMQ_QUEUE_DURABLE must be a valid bool");
-        let prefetch_count = env_var("RABBITMQ_PREFETCH_COUNT")
-            .unwrap_or_else(|_| "10".to_string())
-            .parse()
-            .expect("RABBITMQ_PREFETCH_COUNT must be a valid usize");
-        let prefetch_window = env_var("RABBITMQ_PREFETCH_WINDOW")
-            .unwrap_or_else(|_| "0".to_string())
-            .parse()
-            .expect("RABBITMQ_PREFETCH_WINDOW must be a valid usize");
 
         RabbitMQConfig {
             host,
@@ -106,8 +96,6 @@ impl RabbitMQConfig {
             consumer_tag,
             queue_name,
             is_queue_durable,
-            prefetch_count,
-            prefetch_window,
         }
     }
 
@@ -137,16 +125,6 @@ impl RabbitMQConfig {
             FieldTable::default(),
         )
         .await?;
-
-        // Set QoS (Prefetch Count) - For Batch Processing
-        channel.basic_qos(
-            self.prefetch_count as u16,
-            BasicQosOptions {
-                global: false,
-            },
-        )
-        .await
-        .map_err(|e| format!("Failed to set QoS: {}", e))?;
 
         // Create the consumer
         let consumer = channel

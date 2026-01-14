@@ -1,0 +1,22 @@
+services:
+  rust-rmq-worker:
+    image: neko7nik/rust-rmq-worker:latest
+    container_name: rust-rmq-worker
+
+    environment:
+      - TZ=Asia/Kolkata
+
+      # Logging and Runtime
+      - RUST_LOG=rust_rmq_worker=TRACE
+
+      # RabbitMQ Configuration
+      - RABBITMQ_HOST=amqp.nekonik.com
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=nekonik
+      - RABBITMQ_PASSWORD=NekoNik
+      - RABBITMQ_VHOST=nekonik_vhost
+      - RABBITMQ_CONSUMER_TAG=rust_consumer
+      - RABBITMQ_QUEUE_NAME=nekonik_queue
+      - RABBITMQ_QUEUE_DURABLE=true
+
+    restart: always
